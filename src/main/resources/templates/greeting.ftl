@@ -5,6 +5,7 @@
     <title>Title</title>
 </head>
 <body>
-<p>==== ${name}</p>
+<p>Hi user</p>
+<a href="/main">Main page</a>
 </body>
 </html>
