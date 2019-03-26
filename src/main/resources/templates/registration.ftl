@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<#import "parts/common.ftl" as c>
+
+<@c.page>
 Add new user
 ${message!}
 <form action="/registration" method="post">
@@ -13,5 +9,4 @@ ${message!}
     <input type="hidden" name="_csrf" value="${_csrf.token}">
     <div><input type="submit" value="Sign In"/></div>
 </form>
-</body>
-</html>
+</@c.page>
