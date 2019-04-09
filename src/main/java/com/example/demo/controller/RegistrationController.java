@@ -1,20 +1,21 @@
 package com.example.demo.controller;
 
-import com.example.demo.domain.Role;
 import com.example.demo.domain.User;
-import com.example.demo.repos.UserRepo;
+import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.Collections;
-
 @Controller
 public class RegistrationController {
+    private final UserService userService;
+
     @Autowired
-    private UserRepo userRepo;
+    public RegistrationController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/registration")
     public String registration() {
@@ -23,15 +24,13 @@ public class RegistrationController {
 
     @PostMapping("/registration")
     public String addUser(User user, Model model) {
-        User userFromDb = userRepo.findByUsername(user.getUsername());
-        if (userFromDb != null) {
+
+        if (!userService.addUser(user)) {
             model.addAttribute("message", "User already exists");
             return "registration";
         }
 
-        user.setActive(true);
-        user.setRoles(Collections.singleton(Role.USER));
-        userRepo.save(user);
+
         return "redirect:/login";
     }
 }

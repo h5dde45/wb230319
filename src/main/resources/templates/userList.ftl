@@ -2,12 +2,12 @@
 
 <@c.page>
     List users
-    <table>
-        <thead>
+    <table class="table">
+        <thead class="thead-dark">
         <tr>
             <th>Name</th>
             <th>Role</th>
-            <th></th>
+            <th>#</th>
         </tr>
         </thead>
         <body>

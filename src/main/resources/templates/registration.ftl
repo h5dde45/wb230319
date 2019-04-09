@@ -20,6 +20,13 @@
                        name="password" placeholder="Password"/>
             </div>
         </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label"> Email:</label>
+            <div class="col-sm-6">
+                <input class="form-control" type="email"
+                       name="email" placeholder="email@some.com"/>
+            </div>
+        </div>
         <input type="hidden" name="_csrf" value="${_csrf.token}">
         <div>
             <button type="submit" class="btn btn-info">Create</button>
