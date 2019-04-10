@@ -1,19 +1,25 @@
 package com.example.demo.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.repos.EmailRepo;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MailSender {
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
+    private final EmailRepo emailRepo;
+
+    public MailSender(JavaMailSender mailSender, EmailRepo emailRepo) {
+        this.mailSender = mailSender;
+        this.emailRepo = emailRepo;
+    }
+
 
     public void send(String emailTo, String subject, String message) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-        mailMessage.setFrom("");
+        mailMessage.setFrom(emailRepo.findById(1).get().getUsername());
         mailMessage.setTo(emailTo);
         mailMessage.setSubject(subject);
         mailMessage.setText(message);
