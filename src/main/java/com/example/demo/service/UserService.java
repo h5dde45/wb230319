@@ -27,10 +27,10 @@ public class UserService implements UserDetailsService {
         return userRepo.findByUsername(username);
     }
 
-    public boolean addUser(User user){
+    public boolean addUser(User user) {
         User userFromDb = userRepo.findByUsername(user.getUsername());
 
-        if(userFromDb != null){
+        if (userFromDb != null) {
             return false;
         }
         user.setActive(true);
@@ -38,12 +38,24 @@ public class UserService implements UserDetailsService {
         user.setActivationCode(UUID.randomUUID().toString());
 
         userRepo.save(user);
-        if(!StringUtils.isEmpty(user.getEmail())){
-            String message= String.format(" Hi, %s \n" +
-                    "Follow this link: http://localhost:8080/activate/%s",
+        if (!StringUtils.isEmpty(user.getEmail())) {
+            String message = String.format(" Hi, %s \n" +
+                            "Follow this link: http://localhost:8080/activate/%s",
                     user.getUsername(), user.getActivationCode());
             mailSender.send(user.getEmail(), "ActivationCode", message);
         }
+        return true;
+    }
+
+    public boolean activateUser(String code) {
+        User user = userRepo.findByActivationCode(code);
+
+        if (user == null) {
+            return false;
+        }
+        user.setActivationCode(null);
+        userRepo.save(user);
+
         return true;
     }
 }

@@ -25,7 +25,14 @@ public class RegistrationController {
 
     @GetMapping("/activate/{code}")
     public String activate(Model model, @PathVariable String code) {
-//boolen isActivated
+        boolean isActivated = userService.activateUser(code);
+
+        if(isActivated){
+            model.addAttribute("message","User successfully activated");
+        }else{
+            model.addAttribute("message","Activation code not found");
+        }
+
         return "login";
     }
 
