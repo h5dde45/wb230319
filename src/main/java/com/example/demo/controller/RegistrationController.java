@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.domain.User;
+import com.example.demo.domain.TempUser;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,16 +30,16 @@ public class RegistrationController {
         if(isActivated){
             model.addAttribute("message","User successfully activated");
         }else{
-            model.addAttribute("message","Activation code not found");
+            model.addAttribute("message","User has already been activated previously");
         }
 
         return "login";
     }
 
     @PostMapping("/registration")
-    public String addUser(User user, Model model) {
+    public String addUser(TempUser tempUser, Model model) {
 
-        if (!userService.addUser(user)) {
+        if (!userService.addUser(tempUser)) {
             model.addAttribute("message", "User already exists");
             return "registration";
         }

@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.Role;
+import com.example.demo.domain.TempUser;
 import com.example.demo.domain.User;
+import com.example.demo.repos.TempUserRepo;
 import com.example.demo.repos.UserRepo;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,10 +17,12 @@ import java.util.UUID;
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
+    private final TempUserRepo tempUserRepo;
     private final MailSender mailSender;
 
-    public UserService(UserRepo userRepo, MailSender mailSender) {
+    public UserService(UserRepo userRepo, TempUserRepo tempUserRepo, MailSender mailSender) {
         this.userRepo = userRepo;
+        this.tempUserRepo = tempUserRepo;
         this.mailSender = mailSender;
     }
 
@@ -27,33 +31,38 @@ public class UserService implements UserDetailsService {
         return userRepo.findByUsername(username);
     }
 
-    public boolean addUser(User user) {
-        User userFromDb = userRepo.findByUsername(user.getUsername());
+    public boolean addUser(TempUser tempUser) {
+        User userFromDb = userRepo.findByUsername(tempUser.getUsername());
 
         if (userFromDb != null) {
             return false;
         }
-        user.setActive(true);
-        user.setRoles(Collections.singleton(Role.USER));
-        user.setActivationCode(UUID.randomUUID().toString());
+        tempUser.setActivationCode(UUID.randomUUID().toString());
 
-        userRepo.save(user);
-        if (!StringUtils.isEmpty(user.getEmail())) {
+        tempUserRepo.save(tempUser);
+        if (!StringUtils.isEmpty(tempUser.getEmail())) {
             String message = String.format(" Hi, %s \n" +
                             "Follow this link: http://localhost:8080/activate/%s",
-                    user.getUsername(), user.getActivationCode());
-            mailSender.send(user.getEmail(), "ActivationCode", message);
+                    tempUser.getUsername(), tempUser.getActivationCode());
+            mailSender.send(tempUser.getEmail(), "ActivationCode", message);
         }
         return true;
     }
 
     public boolean activateUser(String code) {
-        User user = userRepo.findByActivationCode(code);
+        TempUser tempUser = tempUserRepo.findByActivationCode(code);
 
-        if (user == null) {
+        if (tempUser == null) {
             return false;
         }
-        user.setActivationCode(null);
+
+        tempUserRepo.delete(tempUser);
+        User user = new User();
+        user.setUsername(tempUser.getUsername());
+        user.setPassword(tempUser.getPassword());
+        user.setEmail(tempUser.getEmail());
+        user.setActive(true);
+        user.setRoles(Collections.singleton(Role.USER));
         userRepo.save(user);
 
         return true;
